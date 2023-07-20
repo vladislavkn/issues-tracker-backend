@@ -15,7 +15,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     TypeOrmModule.forRootAsync({
       useFactory: (config: ConfigService) => ({
         ...config.get(DATABASE_CONFIG_KEY),
-        entities: [],
+        autoLoadEntities: true,
       }),
       inject: [ConfigService],
     }),
