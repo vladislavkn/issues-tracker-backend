@@ -9,9 +9,9 @@ export const databaseConfig = registerAs<TypeOrmModuleOptions>(
     // @ts-ignore
     type: process.env.DB_TYPE,
     port: parseInt(process.env.DB_PORT),
-    username: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_NAME,
+    username: process.env.POSTGRES_USER,
+    password: process.env.POSTGRES_PASSWORD,
+    database: process.env.POSTGRES_DB,
     host: process.env.DB_HOST,
     synchronize: Boolean(process.env.DB_SYNC),
   }),
