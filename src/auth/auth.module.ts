@@ -10,6 +10,7 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { AuthController } from './auth.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
+import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
   imports: [
@@ -21,17 +22,17 @@ import { User } from 'src/users/entities/user.entity';
       useFactory: (
         configService: ConfigService<{ [AUTH_CONFIG_KEY]: AuthConfig }>,
       ) => {
-        const { secret } = configService.get(AUTH_CONFIG_KEY);
+        const { jwtSecret } = configService.get(AUTH_CONFIG_KEY);
 
         return {
-          secret,
+          secret: jwtSecret,
           signOptions: { expiresIn: '60s' },
         };
       },
       inject: [ConfigService],
     }),
   ],
-  providers: [AuthService, UsersService, LocalStrategy],
+  providers: [AuthService, UsersService, LocalStrategy, JwtStrategy],
   controllers: [AuthController],
 })
 export class AuthModule {}
