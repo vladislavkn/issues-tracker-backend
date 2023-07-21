@@ -9,7 +9,7 @@ services:
       - '5432:5432'
     volumes: 
       - ./postgres/data:/var/lib/postgresql/data
-  api:
+  dev:
     build:
       context: .
       dockerfile: Dockerfile
@@ -22,9 +22,27 @@ services:
       - .env
     volumes:
       - .:/usr/src/app
+      - /usr/src/app/node_modules
     links:
       - postgres
-    command: npm run start:dev
+    command: npm run start:debug
+  prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    depends_on:
+      - postgres
+    ports:
+      - 3000:80
+    env_file:
+      - .env
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    links:
+      - postgres
+    command: npm run start:prod
 volumes:
   db:
     driver: local

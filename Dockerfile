@@ -1,50 +1,31 @@
-# ==================
-# Development stage.
-# Used with 'npm run start:dev'.
-# ==================
-
-FROM node:18-alpine As development
+FROM node:16-alpine AS development
 
 WORKDIR /usr/src/app
 
-# Install dependencies.
-COPY --chown=node:node package*.json ./
-RUN npm ci
+COPY package*.json ./
 
-COPY --chown=node:node . .
+RUN apk add --no-cache make gcc g++ python3 && \
+  npm install glob rimraf && \
+  npm rebuild bcrypt --build-from-source && \
+  apk del make gcc g++ python3
 
-USER node
-
-# ============
-# Build stage.
-# ============
-
-FROM node:18-alpine As build
-
-WORKDIR /usr/src/app
-
-COPY --chown=node:node package*.json ./
-
-# Reuse node_modules from development stage to run 'npm run build'.
-COPY --chown=node:node --from=development /usr/src/app/node_modules ./node_modules
-COPY --chown=node:node . .
+COPY . .
 
 RUN npm run build
-ENV NODE_ENV production
 
-# Optimize node_modules' size.
-RUN npm ci --only=production && npm cache clean --force
+FROM node:16-alpine as production
 
-USER node
+ARG NODE_ENV=production
+ENV NODE_ENV=${NODE_ENV}
 
-# =================
-# Production stage.
-# =================
+WORKDIR /usr/src/app
 
-FROM node:18-alpine As production
+COPY package*.json ./
 
-# Reuse node_modules and compiled files from build stage.
-COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
-COPY --chown=node:node --from=build /usr/src/app/dist ./dist
+RUN npm install --only=production
 
-CMD [ "node", "dist/main.js" ]
+COPY . .
+
+COPY --from=development /usr/src/app/dist ./dist
+
+CMD ["node", "dist/main"]

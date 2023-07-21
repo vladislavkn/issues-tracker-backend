@@ -5,10 +5,11 @@ import * as bcrypt from 'bcrypt';
 import { User } from 'src/users/entities/user.entity';
 import { ConfigService } from '@nestjs/config';
 import { AUTH_CONFIG_KEY, AuthConfig } from 'src/config/auth.config';
+import { AccessTokenDto } from './dto/access-token.dto';
 
 @Injectable()
 export class AuthService {
-  private salt: string;
+  private salt: number;
 
   constructor(
     private readonly configService: ConfigService<{
@@ -42,12 +43,11 @@ export class AuthService {
   async register(email: string, password: string) {
     const passwordHash = await bcrypt.hash(password, this.salt);
     const user = await this.usersService.create({ email, passwordHash });
-
     return this.getAccessTokenForUser(user);
   }
 
   private getAccessTokenForUser(user: User) {
-    const payload = { username: user.email, sub: user.id };
+    const payload: AccessTokenDto = { email: user.email, sub: user.id };
 
     return this.jwtService.sign(payload);
   }
