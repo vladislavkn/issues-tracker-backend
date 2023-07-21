@@ -22,11 +22,11 @@ import { JwtStrategy } from './strategies/jwt.strategy';
       useFactory: (
         configService: ConfigService<{ [AUTH_CONFIG_KEY]: AuthConfig }>,
       ) => {
-        const { jwtSecret } = configService.get(AUTH_CONFIG_KEY);
+        const { jwtSecret, jwtExpiresIn } = configService.get(AUTH_CONFIG_KEY);
 
         return {
           secret: jwtSecret,
-          signOptions: { expiresIn: '60s' },
+          signOptions: { expiresIn: jwtExpiresIn },
         };
       },
       inject: [ConfigService],
