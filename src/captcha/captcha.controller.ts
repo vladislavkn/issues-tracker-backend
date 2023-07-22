@@ -1,4 +1,11 @@
-import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Res,
+} from '@nestjs/common';
 import { CaptchaService } from './captcha.service';
 import { Response } from 'express';
 
@@ -14,9 +21,9 @@ export class CaptchaController {
     const isValid = this.captchaService.validateCaptcha(captchaResponse);
 
     if (isValid) {
-      response.json({ success: true });
+      return response.status(200).send({ success: true });
+    } else {
+      return response.status(HttpStatus.BAD_REQUEST).send({ success: false });
     }
-
-    response.status(HttpStatus.BAD_REQUEST).json({ success: false });
   }
 }
