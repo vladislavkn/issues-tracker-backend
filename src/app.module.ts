@@ -8,6 +8,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import { authConfig } from './config/auth.config';
 import { AuthModule } from './auth/auth.module';
+import { CaptchaModule } from './captcha/captcha.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { AuthModule } from './auth/auth.module';
     IssuesModule,
     UsersModule,
     AuthModule,
+    CaptchaModule,
   ],
   controllers: [AppController],
   providers: [AppService],
