@@ -17,8 +17,8 @@ export class IssuesService {
     return this.issuesRepository.save(issue);
   }
 
-  findAll() {
-    return this.issuesRepository.find();
+  findAll(skip: number, take: number) {
+    return this.issuesRepository.find({ skip, take });
   }
 
   findOne(id: number) {
